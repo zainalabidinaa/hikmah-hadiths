@@ -1,0 +1,22 @@
+{
+  "name": "hikmah-hadiths",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "tsx src/import.ts",
+    "import:app-offline": "tsx src/import.ts app-offline",
+    "import:thaqalayn": "tsx src/import.ts thaqalayn",
+    "import:all": "tsx src/import.ts all",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.6.3"
+  }
+}
