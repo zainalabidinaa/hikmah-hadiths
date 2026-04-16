@@ -16,7 +16,7 @@ interface BookNameRow {
   volume?: number
 }
 
-interface ThaqalaynRow {
+interface HikmahDataRow {
   id: number
   bookId: string
   book: string
@@ -47,7 +47,7 @@ interface ThaqalaynRow {
 function extractDataFileId(metadata: BookNameRow): string {
   const match = metadata.bookCover?.match(/\/(\d+)-round\.jpe?g/i)
   if (!match) {
-    throw new Error(`Unable to derive Thaqalayn data file id for ${metadata.bookId}`)
+    throw new Error(`Unable to derive Hikmah data file id for ${metadata.bookId}`)
   }
   return match[1]
 }
@@ -56,11 +56,11 @@ function compactHtmlBreaks(value: string): string {
   return value.replace(/<br\s*\/?>/gi, "\n\n").trim()
 }
 
-function makeScalarGradings(row: ThaqalaynRow): NormalizedGrading[] {
+function makeScalarGradings(row: HikmahDataRow): NormalizedGrading[] {
   const scalarRows = [
-    { scholar: "Shaykh Muhammad Asif al-Mohseni", grade_ar: row.mohseniGrading ?? "", grade_en: "", reference: "ThaqalaynAPI scalar grading" },
-    { scholar: "Shaykh Baqir al-Behbudi", grade_ar: row.behbudiGrading ?? "", grade_en: "", reference: "ThaqalaynAPI scalar grading" },
-    { scholar: "Allamah Baqir al-Majlisi", grade_ar: row.majlisiGrading ?? "", grade_en: "", reference: "ThaqalaynAPI scalar grading" },
+    { scholar: "Shaykh Muhammad Asif al-Mohseni", grade_ar: row.mohseniGrading ?? "", grade_en: "", reference: "Hikmah data scalar grading" },
+    { scholar: "Shaykh Baqir al-Behbudi", grade_ar: row.behbudiGrading ?? "", grade_en: "", reference: "Hikmah data scalar grading" },
+    { scholar: "Allamah Baqir al-Majlisi", grade_ar: row.majlisiGrading ?? "", grade_en: "", reference: "Hikmah data scalar grading" },
   ]
 
   return scalarRows
@@ -74,7 +74,7 @@ function makeScalarGradings(row: ThaqalaynRow): NormalizedGrading[] {
     }))
 }
 
-function makeGradings(row: ThaqalaynRow): NormalizedGrading[] {
+function makeGradings(row: HikmahDataRow): NormalizedGrading[] {
   const expanded = (row.gradingsFull ?? []).map((grading) => ({
     gradeCode: mapArabicGradeToCode(grading.grade_ar ?? null),
     gradeArabic: grading.grade_ar ?? null,
@@ -86,8 +86,8 @@ function makeGradings(row: ThaqalaynRow): NormalizedGrading[] {
   return dedupeAndSortGradings([...expanded, ...makeScalarGradings(row)])
 }
 
-function buildSections(rows: ThaqalaynRow[]): NormalizedSection[] {
-  const categoryMap = new Map<number, { title: string; rows: ThaqalaynRow[] }>()
+function buildSections(rows: HikmahDataRow[]): NormalizedSection[] {
+  const categoryMap = new Map<number, { title: string; rows: HikmahDataRow[] }>()
 
   for (const row of rows) {
     if (!categoryMap.has(row.categoryId)) {
@@ -99,7 +99,7 @@ function buildSections(rows: ThaqalaynRow[]): NormalizedSection[] {
   return Array.from(categoryMap.entries())
     .sort((left, right) => left[0] - right[0])
     .map(([categoryId, category]) => {
-      const chapterGroups = new Map<string, ThaqalaynRow[]>()
+      const chapterGroups = new Map<string, HikmahDataRow[]>()
       for (const row of category.rows) {
         const chapterKey = `${row.categoryId}::${row.chapter}`
         if (!chapterGroups.has(chapterKey)) {
@@ -144,20 +144,20 @@ function buildSections(rows: ThaqalaynRow[]): NormalizedSection[] {
     })
 }
 
-export async function loadThaqalaynBooks(source: { localPath?: string; baseUrl?: string }): Promise<NormalizedBook[]> {
+export async function loadHikmahDataBooks(source: { localPath?: string; baseUrl?: string }): Promise<NormalizedBook[]> {
   const metadataRows = await readJson<BookNameRow[]>("BookNames.json", source)
   const books: NormalizedBook[] = []
 
   for (const metadata of metadataRows) {
     const fileId = extractDataFileId(metadata)
-    const rows = await readJson<ThaqalaynRow[]>(`${fileId}.json`, source)
+    const rows = await readJson<HikmahDataRow[]>(`${fileId}.json`, source)
     const volumeNumber = metadata.volume ?? rows[0]?.volume ?? 1
     const titleTranslit = metadata.BookName ?? rows[0]?.book ?? metadata.bookId
 
     books.push({
-      sourceName: "thaqalayn_api",
+      sourceName: "hikmah_data",
       sourceBookId: metadata.bookId,
-      slug: sourceScopedSlug("thaqalayn-api", metadata.bookId),
+      slug: sourceScopedSlug("hikmah-data", metadata.bookId),
       workSlug: slugify((metadata.BookName ?? metadata.bookId).replace(/\bvolume\s*\d+\b/gi, "").trim()),
       titleArabic: null,
       titleTranslit,

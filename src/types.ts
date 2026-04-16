@@ -1,4 +1,4 @@
-export type SourceName = "hikmah_offline" | "thaqalayn_api"
+export type SourceName = "hikmah_offline" | "hikmah_data"
 
 export interface NormalizedGrading {
   gradeCode: string | null

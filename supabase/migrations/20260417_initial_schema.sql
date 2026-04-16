@@ -13,7 +13,7 @@ $$;
 create table if not exists public.books (
   id bigint generated always as identity primary key,
   slug text not null unique,
-  source_name text not null check (source_name in ('hikmah_offline', 'thaqalayn_api')),
+  source_name text not null check (source_name in ('hikmah_offline', 'hikmah_data')),
   source_book_id text not null,
   work_slug text,
   title_arabic text,

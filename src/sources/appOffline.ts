@@ -105,10 +105,15 @@ export async function loadAppOfflineBooks(source: { localPath?: string; baseUrl?
   let gradingIndex: Record<string, NormalizedGrading[]> = {}
 
   try {
-    const gradingPayload = await readJson<GradingIndexPayload>("thaqalayn_gradings_index.json", source)
+    const gradingPayload = await readJson<GradingIndexPayload>("hikmah_gradings_index.json", source)
     gradingIndex = buildGradingIndex(gradingPayload)
   } catch {
-    gradingIndex = {}
+    try {
+      const gradingPayload = await readJson<GradingIndexPayload>("thaqalayn_gradings_index.json", source)
+      gradingIndex = buildGradingIndex(gradingPayload)
+    } catch {
+      gradingIndex = {}
+    }
   }
 
   const books: NormalizedBook[] = []

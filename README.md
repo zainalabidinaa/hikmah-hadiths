@@ -4,10 +4,12 @@ Supabase schema and import pipeline for a unified hadith backend.
 
 It supports two source families in the same database:
 
-- `thaqalayn_api`: JSON exported in `MohammedArab1/ThaqalaynAPI/V2/ThaqalaynData`
+- `hikmah_data`: JSON exported from the upstream ThaqalaynAPI data path
 - `hikmah_offline`: nested offline JSON files from the Hikmah iOS app's `Resources/Hadith` directory
 
 The importer keeps the two sources side by side instead of trying to merge them destructively. That means duplicate works such as `Al-Kafi` can exist from both sources with different `source_name` / `source_book_id` values.
+
+The upstream dataset still originates from ThaqalaynAPI, but this repo refers to that source family as `hikmah_data`.
 
 ## What This Repo Contains
 
@@ -16,7 +18,7 @@ The importer keeps the two sources side by side instead of trying to merge them 
 - `src/import.ts`
   CLI importer.
 - `src/sources/*.ts`
-  Source adapters for ThaqalaynAPI and Hikmah offline JSON.
+  Source adapters for Hikmah data and Hikmah offline JSON.
 
 ## Setup
 
@@ -39,10 +41,10 @@ npm install
 4. Choose source locations:
 
 - Local checkout paths:
-  - `THAQALAYN_DATA_PATH`
+  - `HIKMAH_DATA_PATH`
   - `HIKMAH_HADITH_PATH`
 - Or GitHub raw base URLs:
-  - `THAQALAYN_DATA_BASE_URL`
+  - `HIKMAH_DATA_BASE_URL`
   - `HIKMAH_HADITH_BASE_URL`
 
 The importer prefers local paths when both are present.
@@ -55,10 +57,10 @@ Import both source families:
 npm run import:all
 ```
 
-Import only ThaqalaynAPI data:
+Import only Hikmah data:
 
 ```bash
-npm run import:thaqalayn
+npm run import:hikmah-data
 ```
 
 Import only Hikmah offline JSON:

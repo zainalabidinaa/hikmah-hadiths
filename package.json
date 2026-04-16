@@ -6,7 +6,7 @@
   "scripts": {
     "import": "tsx src/import.ts",
     "import:app-offline": "tsx src/import.ts app-offline",
-    "import:thaqalayn": "tsx src/import.ts thaqalayn",
+    "import:hikmah-data": "tsx src/import.ts hikmah-data",
     "import:all": "tsx src/import.ts all",
     "typecheck": "tsc --noEmit"
   },

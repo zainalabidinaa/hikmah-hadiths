@@ -3,7 +3,7 @@ import "dotenv/config"
 import { createClient } from "@supabase/supabase-js"
 import { requireEnv, optionalEnv, resolveSourceLocation } from "./lib/env.js"
 import { loadAppOfflineBooks } from "./sources/appOffline.js"
-import { loadThaqalaynBooks } from "./sources/thaqalaynApi.js"
+import { loadHikmahDataBooks } from "./sources/hikmahApi.js"
 import type { NormalizedBook, SourceName } from "./types.js"
 
 type TableName = "books" | "volumes" | "sections" | "chapters" | "hadiths" | "gradings"
@@ -263,18 +263,18 @@ async function main(): Promise<void> {
     auth: { persistSession: false, autoRefreshToken: false },
   })
 
-  const thaqalaynSource = resolveSourceLocation(
-    optionalEnv("THAQALAYN_DATA_PATH"),
-    optionalEnv("THAQALAYN_DATA_BASE_URL") ?? "https://raw.githubusercontent.com/MohammedArab1/ThaqalaynAPI/main/V2/ThaqalaynData/",
+  const hikmahDataSource = resolveSourceLocation(
+    optionalEnv("HIKMAH_DATA_PATH"),
+    optionalEnv("HIKMAH_DATA_BASE_URL") ?? "https://raw.githubusercontent.com/MohammedArab1/ThaqalaynAPI/main/V2/ThaqalaynData/",
   )
   const hikmahSource = resolveSourceLocation(
     optionalEnv("HIKMAH_HADITH_PATH"),
     optionalEnv("HIKMAH_HADITH_BASE_URL"),
   )
 
-  if (mode === "thaqalayn" || mode === "all") {
-    const books = await loadThaqalaynBooks(thaqalaynSource)
-    await importSourceBooks(supabase, books, "thaqalayn_api")
+  if (mode === "hikmah-data" || mode === "all") {
+    const books = await loadHikmahDataBooks(hikmahDataSource)
+    await importSourceBooks(supabase, books, "hikmah_data")
   }
 
   if (mode === "app-offline" || mode === "all") {
@@ -282,7 +282,7 @@ async function main(): Promise<void> {
     await importSourceBooks(supabase, books, "hikmah_offline")
   }
 
-  if (!["thaqalayn", "app-offline", "all"].includes(mode)) {
+  if (!["hikmah-data", "app-offline", "all"].includes(mode)) {
     throw new Error(`Unknown import mode: ${mode}`)
   }
 }
